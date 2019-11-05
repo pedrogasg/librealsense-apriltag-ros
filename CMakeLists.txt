@@ -47,14 +47,6 @@ add_executable(rs-pose-apriltag
 
 add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
 
-target_include_directories(${PROJECT_NAME}
-  PRIVATE ${realsense2_INCLUDE_DIR})
-
-target_link_libraries(${PROJECT_NAME}
-    ${realsense2_LIBRARY}
-    ${catkin_LIBRARIES}
-    )
-
 
 
 

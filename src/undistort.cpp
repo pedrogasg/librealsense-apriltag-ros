@@ -11,9 +11,9 @@ namespace distortion
     {
         int QUEUE_SIZE = 1
         it(nh);
-        iPub = it.advertise("camera/image", QUEUE_SIZE);
-        iSub = it.subscribe("camera/image", QUEUE_SIZE, &Undistort::imageCallback);
-        
+        iPub = it.advertise("undistort/image1", QUEUE_SIZE);
+        iSub = it.subscribe("/camera/fisheye1/image_raw", QUEUE_SIZE, &Undistort::imageCallback);
+        return 0;
     }
 
     void Undistort:imageCallback(const sensor_msgs::ImageConstPtr& msg)

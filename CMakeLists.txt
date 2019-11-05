@@ -1,52 +1,25 @@
-cmake_minimum_required(VERSION 2.8.3)
-project(rs-pose-apriltag)
-add_compile_options(-std=c++11)
+cmake_minimum_required(VERSION 2.8)
+project(undistort)
 
-find_package(catkin REQUIRED COMPONENTS
-    message_generation
-    nav_msgs
-    roscpp
-    sensor_msgs
-    geometry_msgs
-    std_msgs
-    )
+find_package(catkin REQUIRED COMPONENTS cv_bridge image_transport message_generation sensor_msgs)
 
-find_package(realsense2 2.28.0)
-if(NOT realsense2_FOUND)
-    message(FATAL_ERROR "\n\n Intel RealSense SDK 2.0 is missing, please install it from https://github.com/IntelRealSense/librealsense/releases\n\n")
-endif()
+generate_messages(DEPENDENCIES sensor_msgs)
 
-find_path(APRILTAG_INC NAMES apriltag.h PATH_SUFFIXES apriltag)
-find_library(APRILTAG_LIB apriltag)
-include(FindPackageHandleStandardArgs)
-find_package_handle_standard_args(apriltag DEFAULT_MSG APRILTAG_INC APRILTAG_LIB)
-if(APRILTAG_FOUND AND NOT TARGET apriltag)
-    add_library(apriltag INTERFACE)
-    target_include_directories(apriltag INTERFACE ${APRILTAG_INC})
-    target_link_libraries(apriltag INTERFACE ${APRILTAG_LIB})
-endif()
+catkin_package(CATKIN_DEPENDS cv_bridge image_transport message_runtime sensor_msgs)
+
+find_package(OpenCV)
+
+include_directories(include ${catkin_INCLUDE_DIRS} ${OpenCV_INCLUDE_DIRS})
+
+# add the publisher example
+add_executable(undistort-node src/undistort-node.cpp)
+add_dependencies(undistort-node ${catkin_EXPORTED_TARGETS} ${${PROJECT_NAME}_EXPORTED_TARGETS})
+target_link_libraries(undistort-node ${catkin_LIBRARIES} ${OpenCV_LIBRARIES})
 
 
-set(CMAKE_NO_SYSTEM_FROM_IMPORTED true)
-include_directories(
-    include
-    ${realsense2_INCLUDE_DIR}
-    ${catkin_INCLUDE_DIRS}
-    )
-
-# RealSense ROS Node
-catkin_package(
-    LIBRARIES ${PROJECT_NAME}
-    CATKIN_DEPENDS message_runtime roscpp sensor_msgs std_msgs
-    nav_msgs
-    )
-
-add_executable(rs-pose-apriltag 
-    ${rs-pose-apriltag_sources}
+# Mark executables and/or libraries for installation
+install(TARGETS undistort-node
+  ARCHIVE DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  LIBRARY DESTINATION ${CATKIN_PACKAGE_LIB_DESTINATION}
+  RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
-
-add_dependencies(${PROJECT_NAME} ${catkin_EXPORTED_TARGETS})
-
-
-
-

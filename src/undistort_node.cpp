@@ -12,7 +12,7 @@ int main(int argc, char **argv)
   undistort::Undistort worker;
   if(!worker.init(nh))
   {
-    ROS_ERROR("Could not initialize Undistort node!");
+    ROS_ERROR_STREAM("Could not initialize Undistort node!");
     return -1;
   }
   ros::spin();
